@@ -75,8 +75,8 @@ def nouveauxMessages(ancienGsm, nouveauGsm, messagesEnCours,
     l = 40 * len(nouveaux)
     nouveauGsm.envoyes += l
     ancienGsm.recus += l
-    hashAnciens = set([msg.hash for k, msg in enumerate(anciens)])
-    hashDoublons = set([msg.hash for k, msg in enumerate(nouveaux)])
+    hashAnciens = set([msg.hash for msg in anciens])
+    hashDoublons = set([msg.hash for msg in nouveaux])
     hashDoublons.intersection_update(hashAnciens)
     listeSansDouble = [msg for msg in nouveaux if msg.hash not in hashDoublons]
 
