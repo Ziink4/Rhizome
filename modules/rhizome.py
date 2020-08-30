@@ -4,7 +4,7 @@ Created on Fri Oct 10 13:49:54 2014
 
 @author: Florian, Hippolyte
 """
-from numpy import searchsorted
+from bisect import bisect_left
 from numpy.random import rand, randint, normal
 from modules.gsm import GSM, Message
 from copy import deepcopy
@@ -92,7 +92,7 @@ def nouveauxMessages(ancienGsm, nouveauGsm, messagesEnCours,
 
     anciens = anciens[:-surplus]
     for nouveauMsg in listeSansDouble:
-        position = searchsorted([msg.tick for msg in anciens], nouveauMsg.tick)
+        position = bisect_left([msg.tick for msg in anciens], nouveauMsg.tick)
         anciens.insert(position, nouveauMsg)
         # Données envoyées & reçues pour la liste des nouveaux messages
         l = nouveauMsg.contenu
