@@ -77,9 +77,8 @@ def nouveauxMessages(ancienGsm, nouveauGsm, messagesEnCours,
     l = 40 * len(nouveaux)
     nouveauGsm.envoyes += l
     ancienGsm.recus += l
-    hashAnciens = set([msg.hash for msg in anciens])
-    hashDoublons = set([msg.hash for msg in nouveaux])
-    hashDoublons.intersection_update(hashAnciens)
+    hashAnciens = [msg.hash for msg in anciens]
+    hashDoublons = [msg.hash for msg in nouveaux if msg.hash in hashAnciens]
     listeSansDouble = [msg for msg in nouveaux if msg.hash not in hashDoublons]
 
     # Ajout des nouveaux messages, en commencant par les plus récents
