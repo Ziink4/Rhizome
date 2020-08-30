@@ -190,3 +190,29 @@ class Clusters(object):
 
         return array(coordBloc,
                      dtype=[('x', 'int'), ('y', 'int')]), enveloppe
+
+
+if __name__ == "__main__":
+    # Profiling
+    import cProfile
+    import pstats
+
+    # Start Profiler
+    pr = cProfile.Profile()
+    pr.enable()
+
+    # Benchmark clusterisation
+    from modules.graph import Graph
+    for i in range(5):
+        g = Graph(1000, 1000, 20000, 25, True)
+        c = Clusters(g, True)
+
+    # Stop profiler and print stats
+    pr.disable()
+    pr.dump_stats('clusters.prof')
+    # To see results :
+    # gprof2dot -f pstats clusters.prof > clusters.prof.dot
+    # https://dreampuf.github.io/GraphvizOnline/
+
+    ps = pstats.Stats(pr)
+    ps.sort_stats('cumulative').print_stats()
