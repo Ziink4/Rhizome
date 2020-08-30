@@ -454,3 +454,27 @@ class GraphCarte(Graph):
         if debug:
             print("Fin du __init__ : " + str(perf_counter() - tempsDepart) +
                   " (" + str(t3) + ")")
+
+
+if __name__ == "__main__":
+    # Profiling
+    import cProfile
+    import pstats
+
+    # Start Profiler
+    pr = cProfile.Profile()
+    pr.enable()
+
+    # Benchmark clusterisation
+    for i in range(5):
+        g = Graph(1000, 1000, 20000, 25, True)
+
+    # Stop profiler and print stats
+    pr.disable()
+    pr.dump_stats('graph.prof')
+    # To see results :
+    # gprof2dot -f pstats graph.prof > graph.prof.dot
+    # https://dreampuf.github.io/GraphvizOnline/
+
+    ps = pstats.Stats(pr)
+    ps.sort_stats('cumulative').print_stats()
