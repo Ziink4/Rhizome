@@ -5,7 +5,6 @@ Created on Sun Jun 29 15:40:33 2014
 @author: Florian, Hippolyte
 """
 
-from copy import deepcopy
 from time import perf_counter
 from numpy import sort, linspace, array, flipud
 from modules.graph import GraphCarte
@@ -30,30 +29,29 @@ class Clusters(object):
 
         compteur = 0
 
-        connexions = deepcopy(graph.connexions)
-        nonConnectes = list(range(len(connexions)))
+        nonConnectes = set(range(graph.n))
         clusters = []
         while nonConnectes:
             # Tant que la liste grandit, on on ajoute tout les amis des amis
-            nouveauCluster = list(connexions[nonConnectes[0]])
+            nouveauCluster = set(graph.connexions[nonConnectes.pop()])
             n1, n2 = 0, 1
             while n2 > n1:
-                L2 = []
-                for gsm in nouveauCluster:
-                    L2 += connexions[gsm]
-                    # Compteur pour la complexité
-                    compteur += 1
-                nouveauCluster = set(list(nouveauCluster) + L2)
+                nouveauxElementsCluster = [connectes for gsm in nouveauCluster for connectes in graph.connexions[gsm]]
+
+                # Compteur pour la complexité
+                compteur += len(nouveauCluster)
+
+                nouveauCluster.update(nouveauxElementsCluster)
+
                 n1, n2 = n2, len(nouveauCluster)
+
             # On enlève des non connectés les connéctés
-            # O(n)
-            for gsm in nouveauCluster:
-                nonConnectes.remove(gsm)
+            nonConnectes.difference_update(nouveauCluster)
 
             # On augmente la liste finale
             clusters.append(nouveauCluster)
 
-        # On ordonne ltot par taille décroissante des paquets
+        # On ordonne les clusters par taille décroissante
         clusters.sort(key=len, reverse=True)
 
         t = perf_counter() - tempsDepart
@@ -193,6 +191,10 @@ class Clusters(object):
 
 
 if __name__ == "__main__":
+    # Setup
+    from modules.graph import Graph
+    g = Graph(1000, 1000, 20000, 25, True)
+
     # Profiling
     import cProfile
     import pstats
@@ -202,9 +204,7 @@ if __name__ == "__main__":
     pr.enable()
 
     # Benchmark clusterisation
-    from modules.graph import Graph
-    for i in range(5):
-        g = Graph(1000, 1000, 20000, 25, True)
+    for i in range(10):
         c = Clusters(g, True)
 
     # Stop profiler and print stats
