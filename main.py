@@ -102,8 +102,26 @@ def testCarte(p, n=None, carte=0, afficherCarte=False, tempo=100):
 
 
 if __name__ == "__main__":
+    # Profiling
+    import cProfile
+    import pstats
+
+    # Start Profiler
+    pr = cProfile.Profile()
+    pr.enable()
+
     # Test clusterisation sur une carte
     # t = testCarte(2, 10, carte=3, afficherCarte=True, tempo=0)
 
     # Test clusterisation sur une distribution random
-    t = test(1, 0)
+    t = test(0, 0)
+
+    # Stop profiler and print stats
+    pr.disable()
+    pr.dump_stats('main.prof')
+    # To see results :
+    # gprof2dot -f pstats main.prof > main.prof.dot
+    # https://dreampuf.github.io/GraphvizOnline/
+
+    ps = pstats.Stats(pr)
+    ps.sort_stats('cumulative').print_stats()
