@@ -32,6 +32,7 @@ class Graph(object):
 
         # Liste des GSM interconnectés
         connexions = [[] for _ in range(n)]
+        distancesVoisins = [[] for _ in range(n)]
 
         tempsDepart = perf_counter()
 
@@ -83,8 +84,10 @@ class Graph(object):
 
             for gsm2 in carre:
                 # Si on est dans le cercle
-                if (gsm2[1] - x)**2 + (gsm2[2] - y)**2 <= pp:
+                distance = (gsm2[1] - x)**2 + (gsm2[2] - y)**2
+                if distance <= pp:
                     connexions[i].append(gsm2[0])
+                    distancesVoisins[i].append((sqrt(distance), gsm2[0]))
 
         # t3 Dépends de p et de n
         # La courbe est assez particulière
@@ -119,10 +122,7 @@ class Graph(object):
         coord.sort(-1, 'heapsort', ['indice'])
         self.coord = deepcopy(coord)
 
-        self.distancesVoisins = [[(sqrt((coord[gsm][1] - coord[gsm2][1])**2 +
-                                        (coord[gsm][2] - coord[gsm2][2])**2),
-                                   gsm2) for gsm2 in connexions[gsm]]
-                                 for gsm in range(n)]
+        self.distancesVoisins = distancesVoisins
 
         # La courbe a la même forme que celle de t3
         t3 = perf_counter() - tempsDepart - t2
@@ -369,7 +369,8 @@ class GraphCarte(Graph):
         n = len(coord)
 
         # Liste des GSM interconnectés
-        connexions = [[] for __ in range(n)]
+        connexions = [[] for _ in range(n)]
+        distancesVoisins = [[] for _ in range(n)]
 
         t0 = perf_counter() - tempsDepart
         if debug:
@@ -403,8 +404,10 @@ class GraphCarte(Graph):
 
             for gsm2 in carre:
                 # Si on est dans le cercle
-                if (gsm2[1] - x)**2 + (gsm2[2] - y)**2 <= pp:
+                distance = (gsm2[1] - x)**2 + (gsm2[2] - y)**2
+                if distance <= pp:
                     connexions[i].append(gsm2[0])
+                    distancesVoisins[i].append((sqrt(distance), gsm2[0]))
 
         t2 = perf_counter() - tempsDepart - t1
         if debug:
@@ -440,10 +443,7 @@ class GraphCarte(Graph):
         coord.sort(-1, 'heapsort', ['indice'])
         self.coord = deepcopy(coord)
 
-        self.distancesVoisins = [[(sqrt((coord[gsm][1] - coord[gsm2][1])**2 +
-                                        (coord[gsm][2] - coord[gsm2][2])**2),
-                                   gsm2) for gsm2 in connexions[gsm]]
-                                 for gsm in range(n)]
+        self.distancesVoisins = distancesVoisins
 
         t3 = perf_counter() - tempsDepart - t2
         self.temps = (tcarte, t0, t1, t2, t3)
