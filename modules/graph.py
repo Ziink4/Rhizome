@@ -4,7 +4,7 @@ Created on Mon Jun 30 11:04:45 2014
 
 @author: Florian, Hippolyte
 """
-from time import clock
+from time import perf_counter
 from numpy import array, searchsorted, linspace, sum
 from numpy.random import randint, choice
 from heapq import heappush, heappop
@@ -36,7 +36,7 @@ class Graph(object):
         # Liste des GSM interconnectés
         connexions = [[] for i in range(n)]
 
-        tempsDepart = clock()
+        tempsDepart = perf_counter()
 
         # On créee la liste des coordonnées des GSM (X,Y) avec une bijection
         # de [0, tailleX*tailleY - 1] dans [0, tailleX - 1] x [0, tailleY - 1]
@@ -44,7 +44,7 @@ class Graph(object):
         coord = array(([(k, v % tailleX, v // tailleX) for k, v in listeId]),
                       dtype=[('indice', 'int'), ('x', 'int'), ('y', 'int')])
 
-        t0 = clock() - tempsDepart
+        t0 = perf_counter() - tempsDepart
         if debug:
             print("Génération : ", t0)
 
@@ -62,9 +62,9 @@ class Graph(object):
             triParX.append((searchsorted(coord['x'], x - p),
                             searchsorted(coord['x'], x + p + 1)))
 
-        t1 = clock() - tempsDepart - t0
+        t1 = perf_counter() - tempsDepart - t0
         if debug:
-            print("Tri par X : " + str(clock() - tempsDepart) + \
+            print("Tri par X : " + str(perf_counter() - tempsDepart) + \
                   " (" + str(t1) + ")")
 
         # Création de la listes des GSM interconnectés:
@@ -92,9 +92,9 @@ class Graph(object):
         # t3 Dépends de p et de n
         # La courbe est assez particulière
         # Cf. http://i.imgur.com/Lo7m3xH.png ou courbe_t3.png
-        t2 = clock() - tempsDepart - t1
+        t2 = perf_counter() - tempsDepart - t1
         if debug:
-            print("Tri par Y & Cercle : " + str(clock() - tempsDepart) + \
+            print("Tri par Y & Cercle : " + str(perf_counter() - tempsDepart) + \
                   " (" + str(t2) + ")")
 
         # Surface totale de la zone étudiée en m²
@@ -128,10 +128,10 @@ class Graph(object):
                                  for gsm in range(n)]
 
         # La courbe a la même forme que celle de t3
-        t3 = clock() - tempsDepart - t2
+        t3 = perf_counter() - tempsDepart - t2
         self.temps = (t0, t1, t2, t3)
         if debug:
-            print("Fin du __init__ : " + str(clock() - tempsDepart) + \
+            print("Fin du __init__ : " + str(perf_counter() - tempsDepart) + \
                   " (" + str(t3) + ")")
 
     def afficherPlot(self, taillePoints=None):
@@ -143,7 +143,7 @@ class Graph(object):
         Si rien n'est fourni, la taille des points est automatiquement calculée
         pour etre le mieux visible en fonction de la taille en X et en Y
         """
-        tempsDepart = clock()
+        tempsDepart = perf_counter()
         tailleX = self.tailleX
         tailleY = self.tailleY
         coord = self.coord
@@ -175,7 +175,7 @@ class Graph(object):
         LX = []
         LY = []
 
-        t0 = clock() - tempsDepart
+        t0 = perf_counter() - tempsDepart
         if self.debug:
             print("Initialisation du graphique : ", t0)
 
@@ -189,10 +189,10 @@ class Graph(object):
 
         plt.show()
 
-        t1 = clock() - tempsDepart - t0
+        t1 = perf_counter() - tempsDepart - t0
         if self.debug:
             print("Remplissage du graphique et affichage : " + \
-                  str(clock() - tempsDepart) + " (" + str(t1) + ")")
+                  str(perf_counter() - tempsDepart) + " (" + str(t1) + ")")
 
         return (t0, t1)
 
@@ -212,7 +212,7 @@ class Graph(object):
         dire que l'algorithme ne fera aucune différence entre A et B même si B
         est à 1mm de vous et B à 1m. (défaut = lambda x: 1)
         """
-        tempsDepart = clock()
+        tempsDepart = perf_counter()
         M = set()
         d = {gsmDepart: 0}
         p = {}
@@ -241,7 +241,7 @@ class Graph(object):
         if x not in p.keys():
             raise Exception("Non reliés !")
 
-        t0 = clock() - tempsDepart
+        t0 = perf_counter() - tempsDepart
         if self.debug:
             print("Génération de l'arbre : ", t0)
 
@@ -249,9 +249,9 @@ class Graph(object):
             x = p[x]
             path.insert(0, x)
 
-        t1 = clock() - tempsDepart - t0
+        t1 = perf_counter() - tempsDepart - t0
         if self.debug:
-            print("Parcours de l'arbre : " + str(clock() - tempsDepart) + \
+            print("Parcours de l'arbre : " + str(perf_counter() - tempsDepart) + \
                   " (" + str(t1) + ")")
 
         return d[gsmArrivee], path, (t0, t1)
@@ -294,12 +294,12 @@ class GraphCarte(Graph):
         if p < 1:
             raise ValueError("Portée nulle.")
 
-        tempsDepart = clock()
+        tempsDepart = perf_counter()
 
         tcarte = -1
 
         # On déduit de la carte les paramètres:
-        carte = plt.imread(nomCarte)
+        carte = plt.imread(nomCarte).copy()
 
         # carte.shape = (largeur, hauteur, 3)
         tailleX, tailleY, _ = carte.shape
@@ -336,13 +336,14 @@ class GraphCarte(Graph):
             for X in range(tailleX):
                 for Y in range(tailleY):
                     if carte[X][Y][0] <= 254:
-                        carte[X][Y] *= coeff
+                        carte[X][Y] = carte[X][Y] * coeff
 
             self.coeff = coeff
 
-            tcarte = clock() - tempsDepart
+            tcarte = perf_counter() - tempsDepart
             if debug:
                 print("Dilatation des couleurs : ", tcarte)
+                # plt.imsave("tmp_dilatation.bmp", carte)
 
         # On crée la liste des coordonnées des GSM (X,Y),
         # en fonction de la carte
@@ -374,7 +375,7 @@ class GraphCarte(Graph):
         # Liste des GSM interconnectés
         connexions = [[] for __ in range(n)]
 
-        t0 = clock() - tempsDepart
+        t0 = perf_counter() - tempsDepart
         if debug:
             print("Génération : ", t0)
 
@@ -387,9 +388,9 @@ class GraphCarte(Graph):
             triParX.append((searchsorted(coord['x'], x - p),
                             searchsorted(coord['x'], x + p + 1)))
 
-        t1 = clock() - tempsDepart - t0
+        t1 = perf_counter() - tempsDepart - t0
         if debug:
-            print("Tri par X : " + str(clock() - tempsDepart) + \
+            print("Tri par X : " + str(perf_counter() - tempsDepart) + \
                   " (" + str(t1) + ")")
 
         # Création de la listes des GSM interconnectés
@@ -409,9 +410,9 @@ class GraphCarte(Graph):
                 if (gsm2[1] - x)**2 + (gsm2[2] - y)**2 <= pp:
                     connexions[i].append(gsm2[0])
 
-        t2 = clock() - tempsDepart - t1
+        t2 = perf_counter() - tempsDepart - t1
         if debug:
-            print("Tri par Y & Cercle : " + str(clock() - tempsDepart) + \
+            print("Tri par Y & Cercle : " + str(perf_counter() - tempsDepart) + \
                   " (" + str(t2) + ")")
 
         # Surface totale de la zone étudiée en m²
@@ -448,8 +449,8 @@ class GraphCarte(Graph):
                                    gsm2) for gsm2 in connexions[gsm]]
                                  for gsm in range(n)]
 
-        t3 = clock() - tempsDepart - t2
+        t3 = perf_counter() - tempsDepart - t2
         self.temps = (tcarte, t0, t1, t2, t3)
         if debug:
-            print("Fin du __init__ : " + str(clock() - tempsDepart) + \
+            print("Fin du __init__ : " + str(perf_counter() - tempsDepart) + \
                   " (" + str(t3) + ")")

@@ -6,9 +6,9 @@ Created on Sun Jun 29 15:40:33 2014
 """
 
 from copy import deepcopy
-from time import clock
+from time import perf_counter
 from numpy import sort, linspace, array, flipud
-from graph import GraphCarte
+from modules.graph import GraphCarte
 from matplotlib.markers import MarkerStyle
 
 import scipy.version as spversion
@@ -25,12 +25,12 @@ class Clusters(object):
     débogage durant les calculs (défaut = False)
     """
     def __init__(self, graph, debug=False):
-        tempsDepart = clock()
+        tempsDepart = perf_counter()
 
         compteur = 0
 
         connexions = deepcopy(graph.connexions)
-        nonConnectes = range(len(connexions))
+        nonConnectes = list(range(len(connexions)))
         clusters = []
         while nonConnectes != []:
             # Tant que la liste grandit, on on ajoute tout les amis des amis
@@ -55,9 +55,9 @@ class Clusters(object):
         # On ordonne ltot par taille décroissante des paquets
         clusters.sort(key=len, reverse=True)
 
-        t = clock() - tempsDepart
+        t = perf_counter() - tempsDepart
         if debug:
-            print "Séparation des clusters : ", t
+            print("Séparation des clusters : ", t)
 
         self.temps = (t,)
 
@@ -103,7 +103,7 @@ class Clusters(object):
                 print("Impossible d'importer ConvexHull")
                 modeZones = None
 
-        tempsDepart = clock()
+        tempsDepart = perf_counter()
         L = sort(self.graph.coord, kind='heapsort', order=['indice'])
         clusters = self.clusters
         tailleX = self.graph.tailleX
@@ -133,7 +133,7 @@ class Clusters(object):
         # Dessin de la bordure du bas
         plt.plot([0, tailleX - 1], [0, 0], 'r--', lw=2)
 
-        listeCouleur = plt.cm.spectral(linspace(0, 1, len(clusters)))
+        listeCouleur = plt.cm.Spectral(linspace(0, 1, len(clusters)))
 
         # La liste des 13 styles de points qui sont "pleins" c'est a dire qui
         # peuvent être remplis d'une couleur
@@ -147,9 +147,9 @@ class Clusters(object):
 
         indiceCouleur = 0
 
-        t0 = clock() - tempsDepart
+        t0 = perf_counter() - tempsDepart
         if self.debug:
-            print "Initialisation du graphique : ", t0
+            print("Initialisation du graphique : ", t0)
 
         for bloc in clusters:
             LX = []
@@ -162,19 +162,19 @@ class Clusters(object):
                 LY += [y]
 
             plt.scatter(LX, LY, marker=listeMarkers[indiceCouleur % 13],
-                        edgecolor=couleur, c=couleur, s=taillePoints)
+                        edgecolor=couleur, color=couleur, s=taillePoints)
 
             if modeZones is not None:
                 if len(bloc) == 2:
                     plt.plot([LX[0], LX[1]], [LY[0], LY[1]],
-                             c=couleur, ls='--')
+                             color=couleur, ls='--')
 
                 elif len(bloc) >= 3:
                     coord, enveloppe = self.contoursCluster(bloc, ConvexHull)
 
                     for bord in enveloppe.simplices:
                         plt.plot(coord['x'][bord], coord['y'][bord],
-                                 c=couleur, ls='--')
+                                 color=couleur, ls='--')
 
                     if modeZones:
                         plt.fill(coord[enveloppe.vertices]['x'],
@@ -185,10 +185,10 @@ class Clusters(object):
             indiceCouleur += 1
         plt.show()
 
-        t1 = clock() - tempsDepart - t0
+        t1 = perf_counter() - tempsDepart - t0
         if self.debug:
-            print "Remplissage du graphique et affichage : " + \
-                str(clock() - tempsDepart) + " (" + str(t1) + ")"
+            print("Remplissage du graphique et affichage : " + \
+                str(perf_counter() - tempsDepart) + " (" + str(t1) + ")")
 
         return (t0, t1)
 

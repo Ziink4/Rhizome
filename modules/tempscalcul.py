@@ -5,8 +5,8 @@ Created on Mon Jun 30 16:11:39 2014
 @author: Florian, Hippolyte
 """
 
-from graph import Graph
-from time import clock
+from modules.graph import Graph
+from time import perf_counter
 
 
 def simulationsTempsCalcul(tailleX, tailleY, decoupageN, decoupageP,
@@ -14,7 +14,7 @@ def simulationsTempsCalcul(tailleX, tailleY, decoupageN, decoupageP,
     """
     Répète nbSimulation fois une simulation donnée
     """
-    tempsDepart = clock()
+    tempsDepart = perf_counter()
 
     for numSimul in range(nbSimulations):
         tempsSimul = simulationTempsCalcul(tailleX, tailleY, decoupageN,
@@ -23,7 +23,7 @@ def simulationsTempsCalcul(tailleX, tailleY, decoupageN, decoupageP,
         print('Simulation n : ' + str(numSimul) + ', durée : ' + \
               str(tempsSimul) + ' s')
 
-    print('Temps total : ' + str(clock() - tempsDepart) + ' s')
+    print('Temps total : ' + str(perf_counter() - tempsDepart) + ' s')
 
 
 def simulationTempsCalcul(tailleX, tailleY, decoupageN, decoupageP):
@@ -32,7 +32,7 @@ def simulationTempsCalcul(tailleX, tailleY, decoupageN, decoupageP):
     Et regardes le temps de génération de cette simulation
     en fonction de n et de p
     """
-    tempsDepartSimul = clock()
+    tempsDepartSimul = perf_counter()
 
     f = open(str((tailleX, tailleY, decoupageN.start, decoupageN.stop,
                   decoupageN.step, decoupageP.start, decoupageP.stop,
@@ -54,4 +54,4 @@ def simulationTempsCalcul(tailleX, tailleY, decoupageN, decoupageP):
         # Affichage de la progression en pourcentage
         print(str((n * 100) // decoupageN.stop) + "%")
     f.close()
-    return clock() - tempsDepartSimul
+    return perf_counter() - tempsDepartSimul

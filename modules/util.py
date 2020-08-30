@@ -32,5 +32,5 @@ class Decoupage(list):
         self.start = start
         self.stop = stop
         self.step = step
-        self += list(array(linspace(start, stop, 1 + (stop - start) / step),
+        self += list(array(linspace(start, stop, int(1 + (stop - start) / step)),
                            dtype='int'))

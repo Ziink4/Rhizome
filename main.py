@@ -5,10 +5,10 @@ Created on Mon Jun 30 11:04:45 2014
 @author: Florian, Handers
 """
 
-from modules import graph, analyseClusters, util, clusters
+from modules import graph, util, clusters, analyseClusters
 from numpy import flipud
 import matplotlib.pyplot as plt
-from time import clock
+from time import perf_counter
 
 
 def test(index=4, tempo=100):
@@ -24,7 +24,7 @@ def test(index=4, tempo=100):
     tempo -- (int) Pour préciser la durée d'une note du jingle de fin
     (défaut = 100)
     """
-    tempsDepart = clock()
+    tempsDepart = perf_counter()
 
     situations = [[20, 20, 40, 4], [2000, 2000, 100000, 25], [4, 4, 6, 2],
                   [100, 100, 10000, 2], [2, 2, 4, 2]]
@@ -43,13 +43,13 @@ def test(index=4, tempo=100):
     print(c.nclusters, " Clusters")
 
     print("Plus grand : " + str(taillePlusGrandCluster) + "/" + str(n) + \
-        " Téléphones (" + str(taillePlusGrandCluster*100//n) + "%)")
+          " Téléphones (" + str(taillePlusGrandCluster * 100 // n) + "%)")
 
     print("Qualité de la connexion : " + str(analyseClusters.qualiteConnection(c)))
 
     tgraph = c.afficherPlotAvecClusters(True)
 
-    t0 = clock() - tempsDepart
+    t0 = perf_counter() - tempsDepart
     print("Temps total : ", t0)
     util.jingle(tempo)
 
@@ -72,7 +72,7 @@ def testCarte(p, n=None, carte=0, afficherCarte=False, tempo=100):
     afficherCarte -- (bool) Afficher la carte seule dans un graphique à part
     (défaut = False)
     """
-    tempsDepart = clock()
+    tempsDepart = perf_counter()
     cartes = ['picasso.bmp', 'hrm.bmp', 'ville.bmp', 'presque vide.bmp']
     print("ETAPE 1 : ")
     g = graph.GraphCarte(p, './modules/cartes/' + cartes[carte], n, True)
@@ -88,18 +88,22 @@ def testCarte(p, n=None, carte=0, afficherCarte=False, tempo=100):
     print(c.nclusters, " Clusters")
 
     print("Plus grand : " + str(taillePlusGrandCluster) + "/" + str(n) + \
-        " Téléphones (" + str(taillePlusGrandCluster * 100 // n) + "%)")
+          " Téléphones (" + str(taillePlusGrandCluster * 100 // n) + "%)")
 
     print("Qualité de la connexion : " + str(analyseClusters.qualiteConnection(c)))
 
     tgraph = c.afficherPlotAvecClusters(True)
 
-    t0 = clock() - tempsDepart
+    t0 = perf_counter() - tempsDepart
     print("Temps total : ", t0)
     util.jingle(tempo)
 
     return g, c, tgraph, t0
 
+
 if __name__ == "__main__":
-    t = testCarte(2, 10, carte = 3, afficherCarte=True, tempo=0)
-    # t = test(0, 0)
+    # Test clusterisation sur une carte
+    # t = testCarte(2, 10, carte=3, afficherCarte=True, tempo=0)
+
+    # Test clusterisation sur une distribution random
+    t = test(0, 0)

@@ -13,6 +13,7 @@ class GSM(object):
     la liste des messages qu'il a en mémoire, ainsi que des compteurs de
     données entrantes et sortantes
     """
+
     def __init__(self, imei):
         self.imei = imei
         self.messages = []
@@ -33,6 +34,7 @@ class Message(object):
     contenu -- (str) Précise si le message doit avoir un contenu spécifique
     (défaut = '')
     """
+
     def __init__(self, expediteur, destinataire, tick, contenu=''):
         self.expediteur = expediteur
         self.destinataire = destinataire
@@ -41,14 +43,17 @@ class Message(object):
         # SHA-1 : Fonction de hashage conçue par la NSA
         # On peut trouver une collision en 2 ** 80 opérations
         # TL;DR : IT'S (more than 99.9999999%) SAFE
-        self.hash = sha1(str(expediteur) + str(destinataire) + str(tick) +
-                         str(contenu)).hexdigest()
+        self.hash = sha1(str(expediteur).encode() +
+                         str(destinataire).encode() +
+                         str(tick).encode() +
+                         str(contenu).encode()).hexdigest()
 
     def __repr__(self):
         return repr((self.expediteur, self.destinataire, self.tick,
                      self.contenu))
 
-class AR(object):
+
+class AR(Message):
     """
     Classe représentant un message, caractérisé par un identifiant unique
     (Hash SHA-1), un numéro (IMEI) d'expéditeur, de destinataire,
@@ -58,17 +63,6 @@ class AR(object):
     contenu -- (str) Précise si le message doit avoir un contenu spécifique
     (défaut = '')
     """
-    def __init__(self, expediteur, contenu, tick):
-        self.expediteur = expediteur
-        self.destinataire = 0
-        self.contenu = contenu
-        self.tick = tick
-        # SHA-1 : Fonction de hashage conçue par la NSA
-        # On peut trouver une collision en 2 ** 80 opérations
-        # TL;DR : IT'S (more than 99.9999999%) SAFE
-        self.hash = sha1(str(expediteur) + str(destinataire) + str(tick) +
-                         str(contenu)).hexdigest()
 
-    def __repr__(self):
-        return repr((self.expediteur, self.destinataire, self.tick,
-                     self.contenu))
+    def __init__(self, expediteur, contenu, tick):
+        Message.__init__(self, expediteur, 0, tick, contenu)

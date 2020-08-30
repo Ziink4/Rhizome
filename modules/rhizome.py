@@ -6,11 +6,12 @@ Created on Fri Oct 10 13:49:54 2014
 """
 from numpy import searchsorted
 from numpy.random import rand, randint, normal
-from gsm import GSM, Message
+from modules.gsm import GSM, Message
 from copy import deepcopy
-from graph import Graph
-from clusters import Clusters
-from time import clock
+from modules.graph import Graph
+from modules.clusters import Clusters
+from time import perf_counter
+
 
 # Taille de la mémoire interne d'un téléphone :
 # Capacité 1,000,000 messages de façon a ce que
@@ -32,7 +33,7 @@ def rhizome(graph, listeGsm, proba, ticks=1, capacite=1000000):
                                                         messagesEnCours,
                                                         messagesRecus, proba,
                                                         tick, capacite)
-        print('Tick n : ' + str(i + 1) + ', durée : ' + str(temps))
+        print(('Tick n : ' + str(i + 1) + ', durée : ' + str(temps)))
         listeTemps.append(temps)
 
     return tick, listeTemps, messagesEnCours, messagesRecus, messagesCrees
@@ -40,7 +41,7 @@ def rhizome(graph, listeGsm, proba, ticks=1, capacite=1000000):
 
 def etapeRhizome(graph, listeGsm, messagesEnCours, messagesRecus,
                  messagesCrees, proba=0.5, tick=0, capacite=1000000):
-    t0 = clock()
+    t0 = perf_counter()
     listeProbabilites = rand(graph.n) <= proba
     for gsm in listeGsm:
         gsm.envoyes = 0
@@ -63,7 +64,7 @@ def etapeRhizome(graph, listeGsm, messagesEnCours, messagesRecus,
     for gsm in listeGsm:
         envoyes.append(gsm.envoyes)
         recus.append(gsm.recus)
-    return envoyes, recus, messagesCrees, tick + 1, clock() - t0
+    return envoyes, recus, messagesCrees, tick + 1, perf_counter() - t0
 
 
 def nouveauxMessages(ancienGsm, nouveauGsm, messagesEnCours,
@@ -110,11 +111,20 @@ def nouveauxMessages(ancienGsm, nouveauGsm, messagesEnCours,
 
     ancienGsm.messages = anciens
 
+
 if __name__ == '__main__':
-    g = Graph(1000, 1000, 20000, 25, True)
+    # Test rhizome taille réelle
+    # g = Graph(1000, 1000, 20000, 25, True)
+
+    # Test rhizome rapide
+    g = Graph(20, 20, 40, 4, True)
+
+    # Analyses
     c = Clusters(g, True)
     l = [GSM(k) for k in range(g.n)]
     l2 = deepcopy(l)
-    t0 = clock()
+    t0 = perf_counter()
     t2 = rhizome(g, l, 0.0001, 100)
-    t1 = clock() - t0
+    t1 = perf_counter() - t0
+
+    c.afficherPlotAvecClusters(True)

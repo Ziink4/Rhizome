@@ -6,11 +6,11 @@ Created on Mon Jun 30 16:11:39 2014
 """
 
 from numpy import linspace, mean
-from clusters import Clusters
-from graph import Graph
-from time import clock
+from modules.clusters import Clusters
+from modules.graph import Graph
+from time import perf_counter
 from ast import literal_eval
-from util import Decoupage
+from modules.util import Decoupage
 
 import matplotlib.pyplot as plt
 import matplotlib.markers as mrk
@@ -23,8 +23,8 @@ def qualiteConnection(cluster):
     """
     resultat = 0
     for bloc in cluster.clusters:
-        resultat += len(bloc)**2.
-    return resultat / (cluster.graph.n**2)
+        resultat += len(bloc) ** 2.
+    return resultat / (cluster.graph.n ** 2)
 
 
 def simulationsClusters(tailleX, tailleY, decoupageN, decoupageP,
@@ -41,8 +41,8 @@ def simulationsClusters(tailleX, tailleY, decoupageN, decoupageP,
         tsim.append(simulationClusters(tailleX, tailleY,
                                        decoupageN, decoupageP))
 
-        print 'Simulation n : ' + str(simulation + 1) + ', durée : ' + \
-            str(tsim) + ' s'
+        print('Simulation n : ' + str(simulation + 1) + ', durée : ' + \
+              str(tsim) + ' s')
 
     return tsim
 
@@ -53,10 +53,10 @@ def simulationClusters(tailleX, tailleY, decoupageN, decoupageP):
     Et regardes l'état des clusters et de la qualité de connection
     en fonction de n et de p
     """
-    t0sim = clock()
+    t0sim = perf_counter()
 
     for n in decoupageN:
-        print n
+        print(n)
         for portee in decoupageP:
             clusters = Clusters(Graph(tailleX, tailleY, n, portee))
             data = [qualiteConnection(clusters)]
@@ -76,7 +76,7 @@ def simulationClusters(tailleX, tailleY, decoupageN, decoupageP):
 
             fichier.write(str(data) + '\n')
             fichier.close()
-    return clock() - t0sim
+    return perf_counter() - t0sim
 
 
 def statsClusters(tailleX, tailleY, decoupageN, decoupageP, dispersion=False):
@@ -168,8 +168,8 @@ def simulationsComplexiteClusters(tailleX, tailleY, decoupageN, decoupageP,
         tsim.append(simulationComplexiteClusters(tailleX, tailleY,
                                                  decoupageN, decoupageP))
 
-        print 'Simulation n : ' + str(simulation + 1) + ', durée : ' + \
-            str(tsim) + ' s'
+        print('Simulation n : ' + str(simulation + 1) + ', durée : ' + \
+              str(tsim) + ' s')
 
     return tsim
 
@@ -180,10 +180,10 @@ def simulationComplexiteClusters(tailleX, tailleY, decoupageN, decoupageP):
     Et regardes la complexité de l'algorithme de séparation des clusters
     en fonction de n et de p
     """
-    t0sim = clock()
+    t0sim = perf_counter()
 
     for n in decoupageN:
-        print n
+        print(n)
         for portee in decoupageP:
             clusters = Clusters(Graph(tailleX, tailleY, n, portee))
             fichier = open("./simulations/clustersComplex/" +
@@ -192,7 +192,7 @@ def simulationComplexiteClusters(tailleX, tailleY, decoupageN, decoupageP):
 
             fichier.write(str(clusters.compteur) + '\n')
             fichier.close()
-    return clock() - t0sim
+    return perf_counter() - t0sim
 
 
 def statsComplexiteClusters(tailleX, tailleY, decoupageN, decoupageP,
@@ -207,7 +207,7 @@ def statsComplexiteClusters(tailleX, tailleY, decoupageN, decoupageP,
     """
     plt.close("Compteur")
     plt.figure("Compteur")
-    colorMap = plt.cm.spectral(linspace(0, 1, len(decoupageP)))
+    colorMap = plt.cm.Spectral(linspace(0, 1, len(decoupageP)))
     marqueurs = mrk.MarkerStyle.filled_markers
     indiceCouleur = 0
 
@@ -254,6 +254,7 @@ def statsComplexiteClusters(tailleX, tailleY, decoupageN, decoupageP,
     plt.show()
     return out
 
+
 if __name__ == "__main__":
     # Anciennes statistiques sur les tailles
     # des groupes connexes
@@ -265,10 +266,10 @@ if __name__ == "__main__":
     # Statistiques globales sur la complexité de l'algorithme cluster
     # Par pas de 1000, sur les portées 10-25
     # 5400 scondes pour 1 calcul
-    dP1 = Decoupage(10, 25, 1)
-    dN1 = Decoupage(5000, 25000, 1000)
-    t1 = simulationsComplexiteClusters(2000, 2000, dN1, dP1, 5)
-    out1 = statsComplexiteClusters(2000, 2000, dN1, dP1)
+    # dP1 = Decoupage(10, 25, 1)
+    # dN1 = Decoupage(5000, 25000, 1000)
+    # t1 = simulationsComplexiteClusters(2000, 2000, dN1, dP1, 5)
+    # out1 = statsComplexiteClusters(2000, 2000, dN1, dP1)
 
     # Statistiques plus précises pour les portées 16, 20 et 24
     # par pas de 100
@@ -285,3 +286,10 @@ if __name__ == "__main__":
     # dN3 = Decoupage(5000, 105000, 10000)
     # t3 = simulationsComplexiteClusters(2000, 2000, dN3, dP3)
     # out3 = statsComplexiteClusters(2000, 2000, dN3, dP3)
+
+    # Statistiques RAPIDES sur la complexité de l'algorithme cluster
+    # N = 20000, P = 16
+    dP4 = Decoupage(16, 16, 1)
+    dN4 = Decoupage(20000, 20000, 1)
+    t4 = simulationsComplexiteClusters(2000, 2000, dN4, dP4)
+    out4 = statsComplexiteClusters(2000, 2000, dN4, dP4)
