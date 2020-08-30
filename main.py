@@ -106,4 +106,4 @@ if __name__ == "__main__":
     # t = testCarte(2, 10, carte=3, afficherCarte=True, tempo=0)
 
     # Test clusterisation sur une distribution random
-    t = test(0, 0)
+    t = test(1, 0)

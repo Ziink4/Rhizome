@@ -41,7 +41,7 @@ def simulationsClusters(tailleX, tailleY, decoupageN, decoupageP,
         tsim.append(simulationClusters(tailleX, tailleY,
                                        decoupageN, decoupageP))
 
-        print('Simulation n : ' + str(simulation + 1) + ', durée : ' + \
+        print('Simulation n : ' + str(simulation + 1) + ', durée : ' +
               str(tsim) + ' s')
 
     return tsim
@@ -90,7 +90,7 @@ def statsClusters(tailleX, tailleY, decoupageN, decoupageP, dispersion=False):
     """
     plt.close("Qualité de connection")
     plt.close("Plus grand cluster")
-    colorMap = plt.cm.spectral(linspace(0, 1, len(decoupageP)))
+    colorMap = plt.cm.Spectral(linspace(0, 1, len(decoupageP)))
     marqueurs = mrk.MarkerStyle.filled_markers
     indiceCouleur = 0
     for p in decoupageP:
@@ -168,7 +168,7 @@ def simulationsComplexiteClusters(tailleX, tailleY, decoupageN, decoupageP,
         tsim.append(simulationComplexiteClusters(tailleX, tailleY,
                                                  decoupageN, decoupageP))
 
-        print('Simulation n : ' + str(simulation + 1) + ', durée : ' + \
+        print('Simulation n : ' + str(simulation + 1) + ', durée : ' +
               str(tsim) + ' s')
 
     return tsim

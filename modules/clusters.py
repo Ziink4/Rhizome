@@ -11,7 +11,7 @@ from numpy import sort, linspace, array, flipud
 from modules.graph import GraphCarte
 from matplotlib.markers import MarkerStyle
 
-import scipy.version as spversion
+from scipy.spatial import ConvexHull
 import matplotlib.pyplot as plt
 
 
@@ -24,6 +24,7 @@ class Clusters(object):
     debug -- (bool) Précise si le programme doit afficher les informations de
     débogage durant les calculs (défaut = False)
     """
+
     def __init__(self, graph, debug=False):
         tempsDepart = perf_counter()
 
@@ -32,7 +33,7 @@ class Clusters(object):
         connexions = deepcopy(graph.connexions)
         nonConnectes = list(range(len(connexions)))
         clusters = []
-        while nonConnectes != []:
+        while nonConnectes:
             # Tant que la liste grandit, on on ajoute tout les amis des amis
             nouveauCluster = list(connexions[nonConnectes[0]])
             n1, n2 = 0, 1
@@ -87,22 +88,6 @@ class Clusters(object):
         Si rien n'est fourni, la taille des points est automatiquement calculée
         pour etre le mieux visible en fonction de la taille en X et en Y
         """
-
-        # En dessous de la version 0.13.0 de scipy,
-        # La classe ConvexHull n'as pas d'attributs vertices
-        # Donc on ne peut pas afficher le remplissage
-        if modeZones and spversion.version < '0.13.0':
-            modeZones = False
-
-        # Pour une raison inconnue, parfois l'importation de scipy.spatial
-        # Ne fonctionne tout simplement pas
-        try:
-            from scipy.spatial import ConvexHull
-        except ImportError:
-            if self.debug:
-                print("Impossible d'importer ConvexHull")
-                modeZones = None
-
         tempsDepart = perf_counter()
         L = sort(self.graph.coord, kind='heapsort', order=['indice'])
         clusters = self.clusters
@@ -161,7 +146,7 @@ class Clusters(object):
                 LX += [x]
                 LY += [y]
 
-            plt.scatter(LX, LY, marker=listeMarkers[indiceCouleur % 13],
+            plt.scatter(LX, LY, marker=listeMarkers[indiceCouleur % len(listeMarkers)],
                         edgecolor=couleur, color=couleur, s=taillePoints)
 
             if modeZones is not None:
@@ -187,10 +172,10 @@ class Clusters(object):
 
         t1 = perf_counter() - tempsDepart - t0
         if self.debug:
-            print("Remplissage du graphique et affichage : " + \
-                str(perf_counter() - tempsDepart) + " (" + str(t1) + ")")
+            print("Remplissage du graphique et affichage : " +
+                  str(perf_counter() - tempsDepart) + " (" + str(t1) + ")")
 
-        return (t0, t1)
+        return t0, t1
 
     def contoursCluster(self, bloc, fonctionConvexHull):
         """

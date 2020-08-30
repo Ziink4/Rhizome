@@ -34,7 +34,7 @@ class Graph(object):
             raise ValueError("Trop de GSM ou grille trop petite.")
 
         # Liste des GSM interconnectés
-        connexions = [[] for i in range(n)]
+        connexions = [[] for _ in range(n)]
 
         tempsDepart = perf_counter()
 
@@ -64,7 +64,7 @@ class Graph(object):
 
         t1 = perf_counter() - tempsDepart - t0
         if debug:
-            print("Tri par X : " + str(perf_counter() - tempsDepart) + \
+            print("Tri par X : " + str(perf_counter() - tempsDepart) +
                   " (" + str(t1) + ")")
 
         # Création de la listes des GSM interconnectés:
@@ -94,7 +94,7 @@ class Graph(object):
         # Cf. http://i.imgur.com/Lo7m3xH.png ou courbe_t3.png
         t2 = perf_counter() - tempsDepart - t1
         if debug:
-            print("Tri par Y & Cercle : " + str(perf_counter() - tempsDepart) + \
+            print("Tri par Y & Cercle : " + str(perf_counter() - tempsDepart) +
                   " (" + str(t2) + ")")
 
         # Surface totale de la zone étudiée en m²
@@ -131,7 +131,7 @@ class Graph(object):
         t3 = perf_counter() - tempsDepart - t2
         self.temps = (t0, t1, t2, t3)
         if debug:
-            print("Fin du __init__ : " + str(perf_counter() - tempsDepart) + \
+            print("Fin du __init__ : " + str(perf_counter() - tempsDepart) +
                   " (" + str(t3) + ")")
 
     def afficherPlot(self, taillePoints=None):
@@ -191,10 +191,10 @@ class Graph(object):
 
         t1 = perf_counter() - tempsDepart - t0
         if self.debug:
-            print("Remplissage du graphique et affichage : " + \
+            print("Remplissage du graphique et affichage : " +
                   str(perf_counter() - tempsDepart) + " (" + str(t1) + ")")
 
-        return (t0, t1)
+        return t0, t1
 
     def pathFindingDijkstra(self, gsmDepart, gsmArrivee,
                             courbePuissance=lambda x: 1):
@@ -218,7 +218,7 @@ class Graph(object):
         p = {}
         suivants = [(0, gsmDepart)]
 
-        while suivants != []:
+        while suivants:
 
             dx, x = heappop(suivants)
             if x in M:
@@ -251,7 +251,7 @@ class Graph(object):
 
         t1 = perf_counter() - tempsDepart - t0
         if self.debug:
-            print("Parcours de l'arbre : " + str(perf_counter() - tempsDepart) + \
+            print("Parcours de l'arbre : " + str(perf_counter() - tempsDepart) +
                   " (" + str(t1) + ")")
 
         return d[gsmArrivee], path, (t0, t1)
@@ -361,7 +361,7 @@ class GraphCarte(Graph):
                     coord.append((i, Y, tailleX - X - 1))
                     i += 1
 
-        coord = array((coord),
+        coord = array(coord,
                       dtype=[('indice', 'int'), ('x', 'int'), ('y', 'int')])
 
         # On a inversé les coordonées pour respecter l'orientation de la carte,
@@ -390,7 +390,7 @@ class GraphCarte(Graph):
 
         t1 = perf_counter() - tempsDepart - t0
         if debug:
-            print("Tri par X : " + str(perf_counter() - tempsDepart) + \
+            print("Tri par X : " + str(perf_counter() - tempsDepart) +
                   " (" + str(t1) + ")")
 
         # Création de la listes des GSM interconnectés
@@ -412,7 +412,7 @@ class GraphCarte(Graph):
 
         t2 = perf_counter() - tempsDepart - t1
         if debug:
-            print("Tri par Y & Cercle : " + str(perf_counter() - tempsDepart) + \
+            print("Tri par Y & Cercle : " + str(perf_counter() - tempsDepart) +
                   " (" + str(t2) + ")")
 
         # Surface totale de la zone étudiée en m²
@@ -452,5 +452,5 @@ class GraphCarte(Graph):
         t3 = perf_counter() - tempsDepart - t2
         self.temps = (tcarte, t0, t1, t2, t3)
         if debug:
-            print("Fin du __init__ : " + str(perf_counter() - tempsDepart) + \
+            print("Fin du __init__ : " + str(perf_counter() - tempsDepart) +
                   " (" + str(t3) + ")")

@@ -29,10 +29,10 @@ def simulationsRhizome(tailleX, tailleY, decoupageN, portee, proba, ticks,
     tsim = []
     for simulation in range(nbSimulations):
         tsim.append(simulationRhizome(tailleX, tailleY, decoupageN, portee,
-                                      proba, ticks)[0])
+                                      proba, ticks))
 
-        print('\n Simulation n : ' + str(simulation + 1) + ', durée : ' + \
-            str(tsim) + ' s' + '\n')
+        print('\n Simulation n : ' + str(simulation + 1) + ', durée : ' +
+              str(tsim) + ' s' + '\n')
 
     return tsim
 
@@ -64,7 +64,7 @@ def simulationRhizome(tailleX, tailleY, decoupageN, portee, proba, ticks):
             fichier.write(str(messagesCrees - len(messagesEnCours) - len(messagesRecus)) + '\n')
             fichier.close()
 
-    return perf_counter() - t0sim, g, l
+    return perf_counter() - t0sim
 
 
 def statsRhizome(tailleX, tailleY, decoupageN, portee, proba, ticks):
@@ -151,19 +151,14 @@ def statsRhizome(tailleX, tailleY, decoupageN, portee, proba, ticks):
 if __name__ == "__main__":
     # dN = Decoupage(100, 6600, 100)
     # t0 = simulationRhizome(2000, 2000, dN, 25, 0.3, 300)
-    # r = statsRhizome(2000, 2000, dN, 25, 0.0001, 8500)
+    # statsRhizome(2000, 2000, dN, 25, 0.0001, 8500)
 
     # Simulation (très ?) longue
     # dN = Decoupage(20000, 20000, 1)
-    # t0, g, l = simulationRhizome(1000, 1000, dN, 25, 0.0001, 50000)
-    # r = statsRhizome(1000, 1000, dN, 25, 0.0001, 50000)
+    # t0 = simulationRhizome(1000, 1000, dN, 25, 0.0001, 50000)
+    # statsRhizome(1000, 1000, dN, 25, 0.0001, 50000)
 
     # Simulation rapide (< 3sec)
     dN = Decoupage(40, 40, 1)
-    t0, g, l = simulationRhizome(20, 20, dN, 4, 0.0001, 1000)
-    r = statsRhizome(20, 20, dN, 4, 0.0001, 1000)
-
-    # Afficher les clusters générés par la simulation
-    from clusters import Clusters
-    c = Clusters(g)
-    c.afficherPlotAvecClusters(True)
+    t0 = simulationRhizome(20, 20, dN, 4, 0.0001, 1000)
+    statsRhizome(20, 20, dN, 4, 0.0001, 1000)
