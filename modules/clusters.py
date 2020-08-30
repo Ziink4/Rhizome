@@ -191,7 +191,7 @@ class Clusters(object):
 
 
 if __name__ == "__main__":
-    # Setup
+    # Setup (non-profilé)
     from modules.graph import Graph
     g = Graph(1000, 1000, 20000, 25, True)
 

@@ -112,18 +112,33 @@ def nouveauxMessages(ancienGsm, nouveauGsm, messagesEnCours,
 
 
 if __name__ == '__main__':
+    # Setup (non-profilé) :
     # Test rhizome taille réelle
     # g = Graph(1000, 1000, 20000, 25, True)
-
     # Test rhizome rapide
     g = Graph(20, 20, 40, 4, True)
 
-    # Analyses
     c = Clusters(g, True)
     l = [GSM(k) for k in range(g.n)]
     l2 = deepcopy(l)
-    t0 = perf_counter()
-    t2 = rhizome(g, l, 0.0001, 100)
-    t1 = perf_counter() - t0
 
-    c.afficherPlotAvecClusters(True)
+    # Profiling
+    import cProfile
+    import pstats
+
+    # Start Profiler
+    pr = cProfile.Profile()
+    pr.enable()
+
+    # Simulation
+    t = rhizome(g, l, 0.0001, 100)
+
+    # Stop profiler and print stats
+    pr.disable()
+    pr.dump_stats('rhizomeAR.prof')
+    # To see results :
+    # gprof2dot -f pstats rhizomeAR.prof > rhizomeAR.prof.dot
+    # https://dreampuf.github.io/GraphvizOnline/
+
+    ps = pstats.Stats(pr)
+    ps.sort_stats('cumulative').print_stats()
