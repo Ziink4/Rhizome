@@ -26,12 +26,9 @@ class Graph(object):
     def __init__(self, tailleX, tailleY, n, p, debug=False):
         # On vérifie qu'il y ait bien au moins un téléphone, que la portee
         # ne soit pas nulle et qu'il y ait assez de positions différentes
-        if n < 1:
-            raise ValueError("Pas de GSM.")
-        if p < 1:
-            raise ValueError("Portée nulle.")
-        if tailleX * tailleY < n:
-            raise ValueError("Trop de GSM ou grille trop petite.")
+        assert n > 0, "Pas de GSM."
+        assert p > 0, "Portée nulle."
+        assert tailleX * tailleY >= n, "Trop de GSM ou grille trop petite."
 
         # Liste des GSM interconnectés
         connexions = [[] for _ in range(n)]
@@ -171,7 +168,7 @@ class Graph(object):
         if taillePoints is None:
             taillePoints = min(1000, max(10, 2000 / min(tailleX, tailleY)))
 
-        listeCouleur = plt.cm.spectral(linspace(0, 1, self.n))
+        listeCouleur = plt.cm.Spectral(linspace(0, 1, self.n))
         LX = []
         LY = []
 
@@ -291,8 +288,7 @@ class GraphCarte(Graph):
 
     def __init__(self, p, nomCarte, n=None, debug=False):
         # On vérifie que la portée ne soit pas nulle
-        if p < 1:
-            raise ValueError("Portée nulle.")
+        assert p > 0, "Portée nulle."
 
         tempsDepart = perf_counter()
 
