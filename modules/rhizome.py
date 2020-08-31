@@ -78,8 +78,7 @@ def nouveauxMessages(ancienGsm, nouveauGsm, messagesEnCours,
     nouveauGsm.envoyes += l
     ancienGsm.recus += l
     hashAnciens = [msg.hash for msg in anciens]
-    hashDoublons = [msg.hash for msg in nouveaux if msg.hash in hashAnciens]
-    listeSansDouble = [msg for msg in nouveaux if msg.hash not in hashDoublons]
+    listeSansDouble = [msg for msg in nouveaux if msg.hash not in hashAnciens]
 
     # Ajout des nouveaux messages, en commencant par les plus récents
     surplus = len(listeSansDouble) + len(anciens) - capacite
